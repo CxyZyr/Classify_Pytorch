@@ -1,0 +1,49 @@
+train:
+  do_qat: False  # True if QAT training
+  data_dir: /project/share/JXY/headclassify/useful_copy_deal/train  # The folder path where the data is located
+  ann_path: /project/share/JXY/headclassify/useful_copy_deal/train_head.txt # The data's txt file contains the relative path of the data. The absolute path of the data = data_dir + the relative path in txt
+  dataset: {type: headdataset, test_mode: False, data_aug: True, input_size: 80} # The dataset to be used supports customization, and the following parameters also come from the customized dataset
+  dataloader: {type: DataLoader, batch_size: 512, num_workers: 4, shuffle: True, drop_last: True, pin_memory: True}
+  epoch: 30
+  optim: {type: 'sgd', momentum: 0.9, weight_decay: 0.0004, iter_step: 1, lr_init: 0.00001} # 'adam' or 'sgd'
+  scheduler:
+    type: 'CosineDecayLR' 
+    lr_end: 0.00001
+    warm_up_epoch: 0
+#    type: 'MultiStepLR'
+#    milestones: [12200, 17080, 20740]
+#    gamma: 0.1
+
+val:
+  data_dir: /project/share/JXY/headclassify/useful_copy_deal/val # Same as train
+  ann_path: /project/share/JXY/headclassify/useful_copy_deal/val_head.txt
+  dataset: {type: headdataset, test_mode: True, data_aug: False, input_size: 80}
+  dataloader: {type: DataLoader, batch_size: 512, num_workers: 4, shuffle: False, drop_last: False, pin_memory: True}
+
+model:
+  pretrained: project/20240620_101657/weights/Iter16348_ACC97.89.pth #The loading location of the pre-trained model for normal training and the fp32 model for QAT. If there is no pre-trained model in normal training, just comment this line
+  net:
+    type: MiniFASNetV1SE
+    drop_p: 0.75
+    num_classes: 3
+
+distill:
+  distill_train: False # True if distill training
+  hyp:
+    alpha: 0.9
+    T: 20
+  distill_model:
+    pretrained: project/20240620_123913/weights/Iter24400_ACC98.67.pth
+    net:
+      type: resnet50
+      num_classes: 3
+
+common:
+  test_first: False # Run a test before training starts
+  screen_intvl: 100 # Iteration for screen
+  val_intvl: 200 # Iteration for test and save model, if have best acc
+  save_cfg_name: Distill_ResNet50_MiniFASNetV1SE.yml # save the train yml
+  save_log_dir: ./project  
+  save_weight_dir: ./project 
+
+
