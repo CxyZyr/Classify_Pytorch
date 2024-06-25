@@ -1,0 +1,48 @@
+train:
+  do_qat: True
+  data_dir: /project/share/JXY/headclassify/useful_copy_deal/train
+  ann_path: /project/share/JXY/headclassify/useful_copy_deal/train_head.txt
+  dataset: {type: headdataset, test_mode: False, data_aug: True, input_size: 80}
+  dataloader: {type: DataLoader, batch_size: 512, num_workers: 4, shuffle: True, drop_last: True, pin_memory: True}
+  epoch: 50
+  optim: {type: 'sgd', momentum: 0.9, weight_decay: 0.0004, iter_step: 1, lr_init: 0.0001} # 'isg' or 'sgd'
+  scheduler:
+    type: 'CosineDecayLR'
+    lr_end: 0.00001
+    warm_up_epoch: 0
+#    type: 'MultiStepLR'
+#    milestones: [12200, 17080, 20740]
+#    gamma: 0.1
+
+val:
+  data_dir: /project/share/JXY/headclassify/useful_copy_deal/val
+  ann_path: /project/share/JXY/headclassify/useful_copy_deal/val_head.txt
+  dataset: {type: headdataset, test_mode: True, data_aug: False, input_size: 80}
+  dataloader: {type: DataLoader, batch_size: 512, num_workers: 4, shuffle: False, drop_last: False, pin_memory: True}
+
+model:
+  pretrained: project/20240620_181336/weights/Merge_Iter21716_ACC99.45.pth
+  net:
+    type: QATMiniFASNetV1SE
+    num_classes: 3
+    drop_p: 0.75
+
+distill:
+  distill_train: False
+  hyp:
+    alpha: 0.9
+    T: 20
+  distill_model:
+    pretrained: project/20240620_123913/weights/Iter24400_ACC98.67.pth
+    net:
+      type: resnet50
+      num_classes: 3
+
+common:
+  test_first: False
+  screen_intvl: 100
+  val_intvl: 200
+  save_cfg_name: QATMiniFASNetV1SE.yml
+  save_log_dir: ./project
+  save_weight_dir: ./project
+
