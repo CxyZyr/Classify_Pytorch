@@ -1,0 +1,17 @@
+val:
+  data_dir: /project/share/JXY/headclassify/useful_copy_deal/val
+  ann_path: /project/share/JXY/headclassify/useful_copy_deal/val_head.txt
+  dataset: {type: headdataset, test_mode: True, data_aug: False, input_size: 80}
+  dataloader: {type: DataLoader, batch_size: 512, num_workers: 4, shuffle: False, drop_last: False, pin_memory: True}
+
+model:
+  pretrained: project/20240620_181336/weights/Iter21716_ACC99.45.pth
+  net:
+    type: QATMiniFASNetV1SE
+    num_classes: 3
+    drop_p: 0.75
+
+ptq:
+  backend: fbgemm   # 'fbgemm' or 'qnnpack'
+  calib_num: 1024   # 校准数据的数量
+
