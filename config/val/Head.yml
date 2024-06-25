@@ -1,0 +1,16 @@
+val:
+  quant_model: True
+  data_dir: /project/share/JXY/headclassify/useful_copy_deal/val
+  ann_path: /project/share/JXY/headclassify/useful_copy_deal/val_head.txt
+  dataset: {type: headdataset, test_mode: True, data_aug: False, input_size: 80}
+  dataloader: {type: DataLoader, batch_size: 512, num_workers: 4, shuffle: False, drop_last: False, pin_memory: True}
+
+model:
+  pretrained: project/20240624_111913/weights/ConvertInt8_Iter3128_ACC99.67.pth
+  net:
+    type: QATMiniFASNetV1SE
+    num_classes: 3
+
+device: 'cpu' #如果推理量化模型，则改为‘cpu'
+
+
